@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import {
   ArrowRight,
   BarChart3,
+  Check,
   Clipboard,
   Copy,
   ExternalLink,
@@ -274,10 +275,29 @@ function Header({ view, isAuthed, menuOpen, setMenuOpen, setView, showAuth, sign
 
 function Landing({ onShorten, showAuth }) {
   const [heroUrl, setHeroUrl] = React.useState('');
+  const [sampleCopied, setSampleCopied] = React.useState(false);
+  const copyTimerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    return () => {
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+    };
+  }, []);
 
   function submitHero(event) {
     event.preventDefault();
     onShorten(heroUrl);
+  }
+
+  async function copySampleLink() {
+    try {
+      await navigator.clipboard.writeText('short.ly/style');
+      setSampleCopied(true);
+      if (copyTimerRef.current) clearTimeout(copyTimerRef.current);
+      copyTimerRef.current = setTimeout(() => setSampleCopied(false), 1800);
+    } catch {
+      setSampleCopied(false);
+    }
   }
 
   return (
@@ -304,11 +324,11 @@ function Landing({ onShorten, showAuth }) {
           />
           <button className="dark-button" type="submit">Shorten link</button>
         </form>
-        <div className="sample-link">
+        <button className="sample-link" type="button" onClick={copySampleLink}>
           <strong>short.ly/style</strong>
-          <Copy size={14} />
-          <span>Copy link</span>
-        </div>
+          {sampleCopied ? <Check size={14} /> : <Copy size={14} />}
+          <span>{sampleCopied ? 'Copied' : 'Copy link'}</span>
+        </button>
         <div className="pen-art" aria-hidden="true" />
       </section>
 
