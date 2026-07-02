@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      # 1. Add this environment variable to change the data path inside the container
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - 5432:5432
+    volumes:
+      # 2. Update the volume mount to match the new sub-folder path
+      - db_data:/var/lib/postgresql/data/pgdata
+
+volumes:
+  db_data:
+    name: project-url-shortner_db_data
